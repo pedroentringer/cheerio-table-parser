@@ -23,5 +23,9 @@
   "files": [
     "lib/**/*"
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pedroentringer/cheerio-table-parser" 
+   }
 }
