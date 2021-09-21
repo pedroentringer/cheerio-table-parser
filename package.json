@@ -1,6 +1,6 @@
 {
   "name": "@pedroentringer/cheerio-table-parser",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Parse html table",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -13,6 +13,14 @@ interface IContentsAttrs {
   values: IContents;
 }
 
+interface IParseOptions {
+  headerIsFirstLine?: boolean
+}
+
+const DEFAULT_PARSE_OPTIONS: IParseOptions = {
+  headerIsFirstLine: false
+}
+
 const toCamelcase = (text:string ) : string  => {
   const str = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
@@ -28,56 +36,91 @@ const convert = (text:string) : string | number | boolean => {
 }
 
 module.exports = ($:CheerioAPI) => {
-  $.prototype.parseTable = function () : IContents[]{
+  $.prototype.parseTable = function (options: IParseOptions) : IContents[]{
     const tags:string[] = []
     const rows:IContents[] = []
 
-    $('thead > tr', this).each(function (rowId, row) {
-      $('td, th', row).each(function (colId, col) {
-        const text = $(col).text().trim()
-        tags.push(toCamelcase(text))
+    const currentOptions = {
+      ...DEFAULT_PARSE_OPTIONS, 
+      ...options
+    }
+
+    if(!currentOptions.headerIsFirstLine){
+      $('thead > tr', this).each(function (_rowId, row) {
+        $('td, th', row).each(function (_colId, col) {
+          const text = $(col).text().trim()
+          tags.push(toCamelcase(text))
+        })
       })
-    })
+    }
 
     $('tbody > tr', this).each(function (rowId, row) {
-      const data:IContents = {}
-      $('td, th', row).each(function (colId, col) {
-        const text = $(col).text().trim()
-        const index = tags[colId]
-        data[index] = convert(text)
-      })
-      rows.push(data)
+
+      if(currentOptions.headerIsFirstLine && rowId === 0){
+        
+        $('td, th', row).each(function (_colId, col) {
+          const text = $(col).text().trim()
+          tags.push(toCamelcase(text))
+        })
+
+      }else{
+
+        const data:IContents = {}
+        $('td, th', row).each(function (colId, col) {
+          const text = $(col).text().trim()
+          const index = tags[colId]
+          data[index] = convert(text)
+        })
+        rows.push(data)
+
+      }
     })
 
     return rows
   }
 
-  $.prototype.parseTableAttrs = function () : IContentsAttrs[] {
+  $.prototype.parseTableAttrs = function (options: IParseOptions) : IContentsAttrs[] {
     const tags:string[] = []
     const rows:IContentsAttrs[] = []
 
-    $('thead > tr', this).each(function (rowId, row) {
-      $('td, th', row).each(function (colId, col) {
-        const text = $(col).text().trim()
-        tags.push(toCamelcase(text))
+    const currentOptions = {
+      ...DEFAULT_PARSE_OPTIONS, 
+      ...options
+    }
+
+    if(!currentOptions.headerIsFirstLine){
+      $('thead > tr', this).each(function (_rowId, row) {
+        $('td, th', row).each(function (_colId, col) {
+          const text = $(col).text().trim()
+          tags.push(toCamelcase(text))
+        })
       })
-    })
+    }
 
     $('tbody > tr', this).each(function (rowId, row) {
-      const data:IContentsAttrs = {
-        attrs: { ...$(row).attr() },
-        values: {}
-      }
 
-      $('td, th', row).each(function (colId, col) {
-        const text = $(col).text().trim()
-        const index = tags[colId]
-        data.values[index] = {
-          attrs: $(col).attr(),
-          value: convert(text)
+      if(currentOptions.headerIsFirstLine && rowId === 0){
+        $('td, th', row).each(function (_colId, col) {
+          const text = $(col).text().trim()
+          tags.push(toCamelcase(text))
+        })
+      }else{
+        const data:IContentsAttrs = {
+          attrs: { ...$(row).attr() },
+          values: {}
         }
-      })
-      rows.push(data)
+  
+        $('td, th', row).each(function (colId, col) {
+          const text = $(col).text().trim()
+          const index = tags[colId]
+          data.values[index] = {
+            attrs: $(col).attr(),
+            value: convert(text)
+          }
+        })
+        rows.push(data)
+      }
+      
     })
 
     return rows
