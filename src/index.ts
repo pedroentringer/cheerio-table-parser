@@ -37,7 +37,7 @@ const convert = (text:string) : string | number | boolean => {
   return text
 }
 
-module.exports = ($:CheerioAPI) => {
+module.exports = ($:CheerioAPI):CheerioAPI => {
   $.prototype.parseTable = function (options: IParseOptions) : IContents[]{
     const currentOptions = {
       ...DEFAULT_PARSE_OPTIONS, 

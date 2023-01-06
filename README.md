@@ -14,13 +14,12 @@ Feito isso basta iniciar as duas libs e fazer o scrapping
 
 ```javascript
 import cheerio from 'cheerio';
-import parseTable from '@pedroentringer/cheerio-table-parser';
+import withTableParser from '@pedroentringer/cheerio-table-parser';
 
 const html =
   '<table id="tabela"><thead><tr><th>id</th><th>nome</th><th>Data de Nascimento</th><th>idade</th></tr></thead><tbody><tr><td>1</td><td>Pedro Entringer</td><td>05/10/1997</td><td>22</td></tr></tbody></table>';
 
-const $ = cheerio.load(html);
-parseTable($);
+const $ = withTableParser(cheerio.load(html));
 
 const table = $('#tabela').parseTable();
 ```
@@ -48,13 +47,12 @@ Se sua tabela não tiver os campos em thead, você pode usar a configuração `h
 
 ```javascript
 import cheerio from 'cheerio';
-import parseTable from '@pedroentringer/cheerio-table-parser';
+import withTableParser from '@pedroentringer/cheerio-table-parser';
 
 const html =
   '<table id="tabela"><tbody><tr><th>id</th><th>nome</th><th>Data de Nascimento</th><th>idade</th></tr><tr><td>1</td><td>Pedro Entringer</td><td>05/10/1997</td><td>22</td></tr></tbody></table>';
 
-const $ = cheerio.load(html);
-parseTable($);
+const $ = withTableParser(cheerio.load(html));
 
 const table = $('#tabela').parseTable({ headerIsFirstLine: true });
 ```
@@ -78,13 +76,12 @@ Se sua tabela não tiver header, você poderá definir manualmente usando a conf
 
 ```javascript
 import cheerio from 'cheerio';
-import parseTable from '@pedroentringer/cheerio-table-parser';
+import withTableParser from '@pedroentringer/cheerio-table-parser';
 
 const html =
   '<table id="tabela"><tbody><tr><td>1</td><td>Pedro Entringer</td><td>05/10/1997</td><td>22</td></tr></tbody></table>';
 
-const $ = cheerio.load(html);
-parseTable($);
+const $ = withTableParser(cheerio.load(html));
 
 const table = $('#tabela').parseTable({ headers: ["id", "nome", "dataDeNascimento", "idade"] });
 ```
