@@ -42,7 +42,7 @@ O resultado sera:
 
 O Script convert para String, Number e Boolean
 
-#### Tabela sem <thead>
+#### Tabela sem thead
 
 Se sua tabela não tiver os campos em thead, você pode usar a configuração `headerIsFirstLine`.
 
@@ -57,6 +57,36 @@ const $ = cheerio.load(html);
 parseTable($);
 
 const table = $('#tabela').parseTable({ headerIsFirstLine: true });
+```
+
+O resultado sera:
+
+```json
+[
+  {
+    "id": 1,
+    "nome": "Pedro Entringer",
+    "dataDeNascimento": "05/10/1997",
+    "idade": 22
+  }
+]
+```
+
+#### Header customizado
+
+Se sua tabela não tiver header, você poderá definir manualmente usando a configuração `headers`.
+
+```javascript
+import cheerio from 'cheerio';
+import parseTable from '@pedroentringer/cheerio-table-parser';
+
+const html =
+  '<table id="tabela"><tbody><tr><td>1</td><td>Pedro Entringer</td><td>05/10/1997</td><td>22</td></tr></tbody></table>';
+
+const $ = cheerio.load(html);
+parseTable($);
+
+const table = $('#tabela').parseTable({ headers: ["id", "nome", "dataDeNascimento", "idade"] });
 ```
 
 O resultado sera:

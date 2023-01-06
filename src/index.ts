@@ -1,4 +1,4 @@
-import {CheerioAPI} from './cheerio'
+import { CheerioAPI } from "cheerio";
 
 interface IAttrs {
   [attr: string]: string | number | boolean | { [attr: string]: string } 
@@ -15,10 +15,12 @@ interface IContentsAttrs {
 
 interface IParseOptions {
   headerIsFirstLine?: boolean
+  headers?: string[]
 }
 
-const DEFAULT_PARSE_OPTIONS: IParseOptions = {
-  headerIsFirstLine: false
+const DEFAULT_PARSE_OPTIONS = {
+  headerIsFirstLine: false,
+  headers: []
 }
 
 const toCamelcase = (text:string ) : string  => {
@@ -37,13 +39,13 @@ const convert = (text:string) : string | number | boolean => {
 
 module.exports = ($:CheerioAPI) => {
   $.prototype.parseTable = function (options: IParseOptions) : IContents[]{
-    const tags:string[] = []
-    const rows:IContents[] = []
-
     const currentOptions = {
       ...DEFAULT_PARSE_OPTIONS, 
       ...options
     }
+
+    const tags:string[] = currentOptions.headers
+    const rows:IContents[] = []
 
     if(!currentOptions.headerIsFirstLine){
       $('thead > tr', this).each(function (_rowId, row) {
@@ -52,6 +54,10 @@ module.exports = ($:CheerioAPI) => {
           tags.push(toCamelcase(text))
         })
       })
+    }
+
+    if(currentOptions.headers){
+      tags.push(...currentOptions.headers)
     }
 
     $('tbody > tr', this).each(function (rowId, row) {
@@ -80,13 +86,13 @@ module.exports = ($:CheerioAPI) => {
   }
 
   $.prototype.parseTableAttrs = function (options: IParseOptions) : IContentsAttrs[] {
-    const tags:string[] = []
-    const rows:IContentsAttrs[] = []
-
     const currentOptions = {
       ...DEFAULT_PARSE_OPTIONS, 
       ...options
     }
+
+    const tags:string[] = currentOptions.headers
+    const rows:IContentsAttrs[] = []
 
     if(!currentOptions.headerIsFirstLine){
       $('thead > tr', this).each(function (_rowId, row) {
@@ -114,7 +120,7 @@ module.exports = ($:CheerioAPI) => {
           const text = $(col).text().trim()
           const index = tags[colId]
           data.values[index] = {
-            attrs: $(col).attr(),
+            attrs: $(col).attr() || "",
             value: convert(text)
           }
         })
@@ -125,4 +131,6 @@ module.exports = ($:CheerioAPI) => {
 
     return rows
   }
+
+  return $
 }
